@@ -1,5 +1,5 @@
 ---
-- name: Ensure dependencies are installed
+- name: installation des dependances
   apt:
     name:
       - curl
@@ -7,19 +7,19 @@
     state: present
     update_cache: yes
 
-- name: Add Wazuh GPG Key
+- name: ajout de gpg
   shell: |
     curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --dearmor | tee /usr/share/keyrings/wazuh.gpg > /dev/null
   args:
     creates: /usr/share/keyrings/wazuh.gpg
 
-- name: Add Wazuh Repository
+- name: ajout du repertoire Wazuh
   apt_repository:
     repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
     state: present
     filename: wazuh
 
-- name: Install Wazuh Agent
+- name: Installation agent Wazuh
   apt:
     update_cache: yes
     name: wazuh-agent
@@ -31,7 +31,7 @@
     state: stopped
   ignore_errors: yes
 
-- name: Configure Manager IP
+- name: Configuration Manager IP
   lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<address>.*</address>'
