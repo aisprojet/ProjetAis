@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - TechVault</title>
+</head>
+<body>
+    <h1>Connexion réussie</h1>
+    <p>Bienvenue {{ user }}</p>
+    <p>Vous pouvez maintenant accéder à vos ressources depuis votre machine :</p>
+    <ul>
+        <li>Espace partagé : /mnt/partage</li>
+        <li>Espace privé : /mnt/prive/{{ user }}</li>
+    </ul>
+    <a href="/logout">Déconnexion</a>
+</body>
+</html>

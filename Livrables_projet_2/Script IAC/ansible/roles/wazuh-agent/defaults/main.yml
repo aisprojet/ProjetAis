@@ -1,0 +1,3 @@
+---
+wazuh_manager_ip: "172.16.0.220"
+wazuh_manager_port: 1515

@@ -1,0 +1,18 @@
+[libdefaults]
+    default_realm = TECHVAULT.FR
+    dns_lookup_realm = false
+    dns_lookup_kdc = true
+    forwardable = true
+    ticket_lifetime = 24h
+    rdns = false
+
+[realms]
+    TECHVAULT.FR = {
+        kdc = kerberos.techvault.fr
+        admin_server = kerberos.techvault.fr
+        default_domain = techvault.fr
+    }
+
+[domain_realm]
+    .techvault.fr = TECHVAULT.FR
+    techvault.fr = TECHVAULT.FR

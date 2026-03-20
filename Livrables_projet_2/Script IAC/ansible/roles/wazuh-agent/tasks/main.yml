@@ -1,0 +1,53 @@
+---
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - curl
+      - gnupg
+    state: present
+    update_cache: yes
+
+- name: Add Wazuh GPG Key
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --dearmor | tee /usr/share/keyrings/wazuh.gpg > /dev/null
+  args:
+    creates: /usr/share/keyrings/wazuh.gpg
+
+- name: Add Wazuh Repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+    state: present
+    filename: wazuh
+
+- name: Install Wazuh Agent
+  apt:
+    update_cache: yes
+    name: wazuh-agent
+    state: present
+
+- name: Stop Wazuh Agent before registration
+  systemd:
+    name: wazuh-agent
+    state: stopped
+  ignore_errors: yes
+
+- name: Configure Manager IP
+  lineinfile:
+    path: /var/ossec/etc/ossec.conf
+    regexp: '<address>.*</address>'
+    line: "<address>{{ wazuh_manager_ip }}</address>"
+    backup: yes
+
+- name: Register Agent
+  shell: /var/ossec/bin/agent-auth -m {{ wazuh_manager_ip }} -p {{ wazuh_manager_port }} -A "{{ inventory_hostname }}"
+  changed_when: false
+  register: agent_auth_result
+  until: agent_auth_result.rc == 0
+  retries: 3
+  delay: 5
+
+- name: Enable Wazuh Agent
+  systemd:
+    name: wazuh-agent
+    enabled: yes
+    state: started

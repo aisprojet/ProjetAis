@@ -1,0 +1,46 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/ldap_client
+
+# ansible/roles/ldap_client/tasks/main.yml
+
+- name: Installer SSSD et dépendances
+  apt:
+    name:
+      - sssd
+      - sssd-ldap
+      - ldap-utils
+      - libnss-sss
+      - libpam-sss
+      - ca-certificates
+    state: present
+    update_cache: yes
+
+- name: Déployer le certificat CA LDAP
+  copy:
+    src: ldap-ca.crt
+    dest: /usr/local/share/ca-certificates/ldap-ca.crt
+    mode: '0644'
+    owner: root
+    group: root
+  notify: update ca certificates
+
+- name: Déployer la config SSSD
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: '0600'
+    owner: root
+    group: root
+  notify: restart sssd
+
+- name: Activer SSSD au démarrage
+  service:
+    name: sssd
+    enabled: yes
+    state: started
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Activer NSS et PAM via pam-auth-update
+  command: pam-auth-update --enable sss --force
+  ignore_errors: "{{ ansible_check_mode }}"

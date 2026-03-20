@@ -1,0 +1,183 @@
+
+PLAY [Configuration VM VDI TechVault] ******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [vm-benson910]
+
+TASK [set_hostname : Définir le hostname] **************************************
+changed: [vm-benson910]
+
+TASK [set_hostname : Mettre à jour /etc/hosts] *********************************
+changed: [vm-benson910]
+
+TASK [dns_client : Installer resolvconf] ***************************************
+changed: [vm-benson910]
+
+TASK [dns_client : Configurer /etc/resolv.conf] ********************************
+changed: [vm-benson910]
+
+TASK [dns_client : Empêcher la réécriture de resolv.conf] **********************
+changed: [vm-benson910]
+
+TASK [dns_register : Créer le script d'enregistrement DNS A] *******************
+changed: [vm-benson910]
+
+TASK [dns_register : Copier la clé TSIG sur la VM] *****************************
+changed: [vm-benson910]
+
+TASK [dns_register : Vérifier la copie de la clé TSIG] *************************
+ok: [vm-benson910]
+
+TASK [dns_register : Afficher statut de la clé] ********************************
+ok: [vm-benson910] => {
+    "msg": "Clé présente: True"
+}
+
+TASK [dns_register : Enregistrer la VM dans le DNS dynamique (enregistrement A)] ***
+changed: [vm-benson910]
+
+TASK [dns_register : Supprimer le script DNS A temporaire] *********************
+changed: [vm-benson910]
+
+TASK [dns_register : Créer le script d'enregistrement DNS PTR] *****************
+changed: [vm-benson910]
+
+TASK [dns_register : Enregistrer le PTR (résolution inverse)] ******************
+changed: [vm-benson910]
+
+TASK [dns_register : Supprimer le script DNS PTR temporaire] *******************
+changed: [vm-benson910]
+
+TASK [ldap_client : Installer SSSD et dépendances] *****************************
+changed: [vm-benson910]
+
+TASK [ldap_client : Déployer le certificat CA LDAP] ****************************
+changed: [vm-benson910]
+
+TASK [ldap_client : Déployer la config SSSD] ***********************************
+changed: [vm-benson910]
+
+TASK [ldap_client : Activer SSSD au démarrage] *********************************
+changed: [vm-benson910]
+
+TASK [ldap_client : Activer NSS et PAM via pam-auth-update] ********************
+changed: [vm-benson910]
+
+TASK [kerberos_client : Installer krb5-user et libpam-krb5] ********************
+changed: [vm-benson910]
+
+TASK [kerberos_client : Déployer krb5.conf] ************************************
+changed: [vm-benson910]
+
+TASK [kerberos_keytab : Créer le principal host sur le KDC] ********************
+changed: [vm-benson910 -> localhost]
+
+TASK [kerberos_keytab : Exporter le keytab depuis le KDC] **********************
+changed: [vm-benson910 -> localhost]
+
+TASK [kerberos_keytab : Copier le keytab sur la VM] ****************************
+changed: [vm-benson910]
+
+TASK [kerberos_keytab : Supprimer le keytab temporaire sur localhost] **********
+changed: [vm-benson910 -> localhost]
+
+TASK [nfs_client : Installer nfs-common gss et rpcbind] ************************
+changed: [vm-benson910]
+
+TASK [nfs_client : Déployer la configuration idmapd.conf] **********************
+changed: [vm-benson910]
+
+TASK [nfs_client : Activer rpc-gssd] *******************************************
+ok: [vm-benson910]
+
+TASK [nfs_client : Obtenir un ticket Kerberos machine pour le montage NFS] *****
+changed: [vm-benson910]
+
+TASK [nfs_client : Créer le point de montage privé] ****************************
+changed: [vm-benson910]
+
+TASK [nfs_client : Monter le partage NFS privé avec Kerberos] ******************
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: Passing `warnings` to `exit_json` or `fail_json` is deprecated. This feature will be removed from ansible-core version 2.23. Use `AnsibleModule.warn` instead.
+changed: [vm-benson910]
+
+TASK [nfs_client : Créer le point de montage commun] ***************************
+changed: [vm-benson910]
+
+TASK [nfs_client : Monter le partage NFS commun] *******************************
+changed: [vm-benson910]
+
+TASK [create_user : Rafraîchir le cache SSSD] **********************************
+[ERROR]: Task failed: Module failed: Error executing command: [Errno 2] Aucun fichier ou dossier de ce nom: b'sss_cache'
+Origin: /srv/ansible/roles/create_user/tasks/main.yml:8:3
+
+6 # Ce rôle s'assure que la VM le reconnaît via SSSD
+7
+8 - name: Rafraîchir le cache SSSD
+    ^ column 3
+
+fatal: [vm-benson910]: FAILED! => {"changed": false, "cmd": "sss_cache -E", "msg": "Error executing command.", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [create_user : Attendre que SSSD reconnaisse l'utilisateur] ***************
+changed: [vm-benson910]
+
+TASK [create_user : Créer le répertoire home si absent] ************************
+changed: [vm-benson910]
+
+TASK [create_user : Copier les fichiers de profil bash] ************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Ensure dependencies are installed] *************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Add Wazuh GPG Key] *****************************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Add Wazuh Repository] **************************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Install Wazuh Agent] ***************************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Stop Wazuh Agent before registration] **********************
+ok: [vm-benson910]
+
+TASK [wazuh-agent : Configure Manager IP] **************************************
+changed: [vm-benson910]
+
+TASK [wazuh-agent : Register Agent] ********************************************
+ok: [vm-benson910]
+
+TASK [wazuh-agent : Enable Wazuh Agent] ****************************************
+changed: [vm-benson910]
+
+TASK [Installer le serveur SSH] ************************************************
+ok: [vm-benson910]
+
+TASK [Autoriser l'authentification par clé publique] ***************************
+changed: [vm-benson910]
+
+TASK [Désactiver l'authentification par mot de passe] **************************
+changed: [vm-benson910]
+
+TASK [Exécuter tous les handlers avant le reboot] ******************************
+
+RUNNING HANDLER [ldap_client : restart sssd] ***********************************
+changed: [vm-benson910]
+
+RUNNING HANDLER [ldap_client : update ca certificates] *************************
+changed: [vm-benson910]
+
+RUNNING HANDLER [nfs_client : Redémarrer nfs-idmapd] ***************************
+changed: [vm-benson910]
+
+RUNNING HANDLER [Redémarrer SSH] ***********************************************
+changed: [vm-benson910]
+
+TASK [Redémarrer la VM pour appliquer le hostname] *****************************
+changed: [vm-benson910]
+
+PLAY RECAP *********************************************************************
+vm-benson910               : ok=54   changed=46   unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
+

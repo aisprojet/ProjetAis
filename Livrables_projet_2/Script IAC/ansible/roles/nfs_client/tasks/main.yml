@@ -1,0 +1,64 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/nfs_client
+
+# ansible/roles/nfs_client/tasks/main.yml
+
+- name: Installer nfs-common gss et rpcbind
+  apt:
+    name:
+      - nfs-common
+      - krb5-user
+      - rpcbind
+    state: present
+    update_cache: yes
+
+- name: Déployer la configuration idmapd.conf
+  template:
+    src: idmapd.conf.j2
+    dest: /etc/idmapd.conf
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Redémarrer nfs-idmapd
+
+- name: Activer rpc-gssd
+  service:
+    name: rpc-gssd
+    enabled: yes
+    state: started
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Obtenir un ticket Kerberos machine pour le montage NFS
+  command: kinit -k -t /etc/krb5.keytab host/{{ ansible_fqdn }}@TECHVAULT.FR
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Créer le point de montage privé
+  file:
+    path: "/mnt/prive/{{ vm_user }}"
+    state: directory
+    mode: '0700'
+
+- name: Monter le partage NFS privé avec Kerberos
+  mount:
+    path: "/mnt/prive"
+    src: "nfs.techvault.fr:/prive"
+    fstype: nfs4
+    opts: "sec=krb5p:krb5i:krb5,_netdev,soft,timeo=30"
+    state: mounted
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Créer le point de montage commun
+  file:
+    path: "/mnt/partage"
+    state: directory
+    mode: '0755'
+
+- name: Monter le partage NFS commun
+  mount:
+    path: "/mnt/partage"
+    src: "nfs.techvault.fr:/partage"
+    fstype: nfs4
+    opts: "sec=sys,_netdev,rw"
+    state: mounted
+  ignore_errors: "{{ ansible_check_mode }}"

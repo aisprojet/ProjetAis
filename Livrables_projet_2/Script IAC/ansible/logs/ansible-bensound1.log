@@ -1,0 +1,148 @@
+
+PLAY [Configuration VM VDI TechVault] ******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [vm-bensound1]
+
+TASK [set_hostname : Définir le hostname] **************************************
+changed: [vm-bensound1]
+
+TASK [set_hostname : Mettre à jour /etc/hosts] *********************************
+changed: [vm-bensound1]
+
+TASK [dns_client : Installer resolvconf] ***************************************
+changed: [vm-bensound1]
+
+TASK [dns_client : Configurer /etc/resolv.conf] ********************************
+changed: [vm-bensound1]
+
+TASK [dns_client : Empêcher la réécriture de resolv.conf] **********************
+changed: [vm-bensound1]
+
+TASK [dns_register : Créer le script d'enregistrement DNS A] *******************
+changed: [vm-bensound1]
+
+TASK [dns_register : Copier la clé TSIG sur la VM] *****************************
+changed: [vm-bensound1]
+
+TASK [dns_register : Vérifier la copie de la clé TSIG] *************************
+ok: [vm-bensound1]
+
+TASK [dns_register : Afficher statut de la clé] ********************************
+ok: [vm-bensound1] => {
+    "msg": "Clé présente: True"
+}
+
+TASK [dns_register : Enregistrer la VM dans le DNS dynamique (enregistrement A)] ***
+changed: [vm-bensound1]
+
+TASK [dns_register : Supprimer le script DNS A temporaire] *********************
+changed: [vm-bensound1]
+
+TASK [dns_register : Créer le script d'enregistrement DNS PTR] *****************
+changed: [vm-bensound1]
+
+TASK [dns_register : Enregistrer le PTR (résolution inverse)] ******************
+changed: [vm-bensound1]
+
+TASK [dns_register : Supprimer le script DNS PTR temporaire] *******************
+changed: [vm-bensound1]
+
+TASK [ldap_client : Installer SSSD et dépendances] *****************************
+changed: [vm-bensound1]
+
+TASK [ldap_client : Déployer la config SSSD] ***********************************
+changed: [vm-bensound1]
+
+TASK [ldap_client : Activer SSSD au démarrage] *********************************
+changed: [vm-bensound1]
+
+TASK [ldap_client : Activer NSS et PAM via pam-auth-update] ********************
+changed: [vm-bensound1]
+
+TASK [kerberos_client : Installer krb5-user et libpam-krb5] ********************
+changed: [vm-bensound1]
+
+TASK [kerberos_client : Déployer krb5.conf] ************************************
+changed: [vm-bensound1]
+
+TASK [kerberos_keytab : Créer le principal host sur le KDC] ********************
+changed: [vm-bensound1 -> localhost]
+
+TASK [kerberos_keytab : Exporter le keytab depuis le KDC] **********************
+changed: [vm-bensound1 -> localhost]
+
+TASK [kerberos_keytab : Copier le keytab sur la VM] ****************************
+changed: [vm-bensound1]
+
+TASK [kerberos_keytab : Supprimer le keytab temporaire sur localhost] **********
+changed: [vm-bensound1 -> localhost]
+
+TASK [nfs_client : Installer nfs-common gss et rpcbind] ************************
+changed: [vm-bensound1]
+
+TASK [nfs_client : Déployer la configuration idmapd.conf] **********************
+changed: [vm-bensound1]
+
+TASK [nfs_client : Activer rpc-gssd] *******************************************
+ok: [vm-bensound1]
+
+TASK [nfs_client : Obtenir un ticket Kerberos machine pour le montage NFS] *****
+changed: [vm-bensound1]
+
+TASK [nfs_client : Créer le point de montage privé] ****************************
+changed: [vm-bensound1]
+
+TASK [nfs_client : Monter le partage NFS privé avec Kerberos] ******************
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: Passing `warnings` to `exit_json` or `fail_json` is deprecated. This feature will be removed from ansible-core version 2.23. Use `AnsibleModule.warn` instead.
+changed: [vm-bensound1]
+
+TASK [nfs_client : Créer le point de montage commun] ***************************
+changed: [vm-bensound1]
+
+TASK [nfs_client : Monter le partage NFS commun] *******************************
+changed: [vm-bensound1]
+
+TASK [create_user : Rafraîchir le cache SSSD] **********************************
+[ERROR]: Task failed: Module failed: Error executing command: [Errno 2] Aucun fichier ou dossier de ce nom: b'sss_cache'
+Origin: /srv/ansible/roles/create_user/tasks/main.yml:8:3
+
+6 # Ce rôle s'assure que la VM le reconnaît via SSSD
+7
+8 - name: Rafraîchir le cache SSSD
+    ^ column 3
+
+fatal: [vm-bensound1]: FAILED! => {"changed": false, "cmd": "sss_cache -E", "msg": "Error executing command.", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [create_user : Attendre que SSSD reconnaisse l'utilisateur] ***************
+changed: [vm-bensound1]
+
+TASK [create_user : Créer le répertoire home si absent] ************************
+changed: [vm-bensound1]
+
+TASK [create_user : Copier les fichiers de profil bash] ************************
+changed: [vm-bensound1]
+
+TASK [Installer le serveur SSH] ************************************************
+ok: [vm-bensound1]
+
+TASK [Autoriser l'authentification par clé publique] ***************************
+changed: [vm-bensound1]
+
+TASK [Désactiver l'authentification par mot de passe (optionnel mais recommandé)] ***
+changed: [vm-bensound1]
+
+RUNNING HANDLER [ldap_client : restart sssd] ***********************************
+changed: [vm-bensound1]
+
+RUNNING HANDLER [nfs_client : Redémarrer nfs-idmapd] ***************************
+changed: [vm-bensound1]
+
+RUNNING HANDLER [Redémarrer SSH] ***********************************************
+changed: [vm-bensound1]
+
+PLAY RECAP *********************************************************************
+vm-bensound1               : ok=43   changed=37   unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
+

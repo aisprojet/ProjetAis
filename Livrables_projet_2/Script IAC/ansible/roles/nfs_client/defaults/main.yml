@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for roles/nfs_client
+vm_user: ""
+vm_email: ""
+vm_uid: 1000
+vm_gid: 1000

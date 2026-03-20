@@ -1,0 +1,11 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for roles/ldap_client
+- name: restart sssd
+  service:
+    name: sssd
+    state: restarted
+
+- name: update ca certificates
+  command: update-ca-certificates
+  when: ansible_os_family == "Debian"

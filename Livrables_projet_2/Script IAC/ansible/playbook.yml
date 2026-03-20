@@ -1,0 +1,55 @@
+- name: Configuration VM VDI TechVault
+  hosts: vdi
+  become: true
+  vars:
+    ansible_user: ais
+    ansible_ssh_private_key_file: /var/lib/www-data/.ssh/id_rsa
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  roles:
+    - set_hostname
+    - dns_client
+    - dns_register
+    - ldap_client
+    - kerberos_client
+    - kerberos_keytab
+    - nfs_client
+    - create_user
+    - wazuh-agent
+  tasks:
+    - name: Installer le serveur SSH
+      apt:
+        name: openssh-server
+        state: present
+      notify: Redémarrer SSH
+
+    - name: Autoriser l'authentification par clé publique
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        backup: yes
+
+    - name: Désactiver l'authentification par mot de passe
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        backup: yes
+      notify: Redémarrer SSH
+
+    - name: Exécuter tous les handlers avant le reboot
+      meta: flush_handlers
+
+    - name: Redémarrer la VM pour appliquer le hostname
+      reboot:
+        msg: "Redémarrage pour appliquer le hostname"
+        connect_timeout: 5
+        reboot_timeout: 120
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+
+  handlers:
+    - name: Redémarrer SSH
+      systemd:
+        name: ssh
+        state: restarted

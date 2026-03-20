@@ -1,0 +1,162 @@
+
+PLAY [Configuration VM VDI TechVault] ******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [vm-benson900]
+
+TASK [set_hostname : Définir le hostname] **************************************
+changed: [vm-benson900]
+
+TASK [set_hostname : Mettre à jour /etc/hosts] *********************************
+changed: [vm-benson900]
+
+TASK [dns_client : Installer resolvconf] ***************************************
+changed: [vm-benson900]
+
+TASK [dns_client : Configurer /etc/resolv.conf] ********************************
+changed: [vm-benson900]
+
+TASK [dns_client : Empêcher la réécriture de resolv.conf] **********************
+changed: [vm-benson900]
+
+TASK [dns_register : Créer le script d'enregistrement DNS A] *******************
+changed: [vm-benson900]
+
+TASK [dns_register : Copier la clé TSIG sur la VM] *****************************
+changed: [vm-benson900]
+
+TASK [dns_register : Vérifier la copie de la clé TSIG] *************************
+ok: [vm-benson900]
+
+TASK [dns_register : Afficher statut de la clé] ********************************
+ok: [vm-benson900] => {
+    "msg": "Clé présente: True"
+}
+
+TASK [dns_register : Enregistrer la VM dans le DNS dynamique (enregistrement A)] ***
+changed: [vm-benson900]
+
+TASK [dns_register : Supprimer le script DNS A temporaire] *********************
+changed: [vm-benson900]
+
+TASK [dns_register : Créer le script d'enregistrement DNS PTR] *****************
+changed: [vm-benson900]
+
+TASK [dns_register : Enregistrer le PTR (résolution inverse)] ******************
+changed: [vm-benson900]
+
+TASK [dns_register : Supprimer le script DNS PTR temporaire] *******************
+changed: [vm-benson900]
+
+TASK [ldap_client : Installer SSSD et dépendances] *****************************
+changed: [vm-benson900]
+
+TASK [ldap_client : Déployer la config SSSD] ***********************************
+changed: [vm-benson900]
+
+TASK [ldap_client : Activer SSSD au démarrage] *********************************
+changed: [vm-benson900]
+
+TASK [ldap_client : Activer NSS et PAM via pam-auth-update] ********************
+changed: [vm-benson900]
+
+TASK [kerberos_client : Installer krb5-user et libpam-krb5] ********************
+changed: [vm-benson900]
+
+TASK [kerberos_client : Déployer krb5.conf] ************************************
+changed: [vm-benson900]
+
+TASK [kerberos_keytab : Créer le principal host sur le KDC] ********************
+changed: [vm-benson900 -> localhost]
+
+TASK [kerberos_keytab : Exporter le keytab depuis le KDC] **********************
+changed: [vm-benson900 -> localhost]
+
+TASK [kerberos_keytab : Copier le keytab sur la VM] ****************************
+changed: [vm-benson900]
+
+TASK [kerberos_keytab : Supprimer le keytab temporaire sur localhost] **********
+changed: [vm-benson900 -> localhost]
+
+TASK [nfs_client : Installer nfs-common gss et rpcbind] ************************
+changed: [vm-benson900]
+
+TASK [nfs_client : Déployer la configuration idmapd.conf] **********************
+changed: [vm-benson900]
+
+TASK [nfs_client : Activer rpc-gssd] *******************************************
+ok: [vm-benson900]
+
+TASK [nfs_client : Obtenir un ticket Kerberos machine pour le montage NFS] *****
+changed: [vm-benson900]
+
+TASK [nfs_client : Créer le point de montage privé] ****************************
+changed: [vm-benson900]
+
+TASK [nfs_client : Monter le partage NFS privé avec Kerberos] ******************
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: Passing `warnings` to `exit_json` or `fail_json` is deprecated. This feature will be removed from ansible-core version 2.23. Use `AnsibleModule.warn` instead.
+changed: [vm-benson900]
+
+TASK [nfs_client : Créer le point de montage commun] ***************************
+changed: [vm-benson900]
+
+TASK [nfs_client : Monter le partage NFS commun] *******************************
+changed: [vm-benson900]
+
+TASK [create_user : Rafraîchir le cache SSSD] **********************************
+[ERROR]: Task failed: Module failed: Error executing command: [Errno 2] Aucun fichier ou dossier de ce nom: b'sss_cache'
+Origin: /srv/ansible/roles/create_user/tasks/main.yml:8:3
+
+6 # Ce rôle s'assure que la VM le reconnaît via SSSD
+7
+8 - name: Rafraîchir le cache SSSD
+    ^ column 3
+
+fatal: [vm-benson900]: FAILED! => {"changed": false, "cmd": "sss_cache -E", "msg": "Error executing command.", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [create_user : Attendre que SSSD reconnaisse l'utilisateur] ***************
+changed: [vm-benson900]
+
+TASK [create_user : Créer le répertoire home si absent] ************************
+changed: [vm-benson900]
+
+TASK [create_user : Copier les fichiers de profil bash] ************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Ensure dependencies are installed] *************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Add Wazuh GPG Key] *****************************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Add Wazuh Repository] **************************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Install Wazuh Agent] ***************************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Stop Wazuh Agent before registration] **********************
+ok: [vm-benson900]
+
+TASK [wazuh-agent : Configure Manager IP] **************************************
+changed: [vm-benson900]
+
+TASK [wazuh-agent : Register Agent] ********************************************
+FAILED - RETRYING: [vm-benson900]: Register Agent (3 retries left).
+FAILED - RETRYING: [vm-benson900]: Register Agent (2 retries left).
+FAILED - RETRYING: [vm-benson900]: Register Agent (1 retries left).
+[ERROR]: Task failed: Module failed: non-zero return code
+Origin: /srv/ansible/roles/wazuh-agent/tasks/main.yml:41:3
+
+39     backup: yes
+40
+41 - name: Register Agent
+     ^ column 3
+
+fatal: [vm-benson900]: FAILED! => {"attempts": 3, "changed": false, "cmd": "/var/ossec/bin/agent-auth -m 172.16.0.220 -p 1515 -A \"vm-benson900\"", "delta": "0:00:00.009606", "end": "2026-03-18 11:47:26.327127", "msg": "non-zero return code", "rc": 1, "start": "2026-03-18 11:47:26.317521", "stderr": "2026/03/18 11:47:26 agent-auth: INFO: Started (pid: 5861).\n2026/03/18 11:47:26 agent-auth: INFO: Requesting a key from server: 172.16.0.220\n2026/03/18 11:47:26 agent-auth: INFO: No authentication password provided\n2026/03/18 11:47:26 agent-auth: INFO: Using agent name as: vm-benson900\n2026/03/18 11:47:26 agent-auth: INFO: Waiting for server reply\n2026/03/18 11:47:26 agent-auth: ERROR: Agent version must be lower or equal to manager version (from manager)\n2026/03/18 11:47:26 agent-auth: ERROR: Unable to add agent (from manager)", "stderr_lines": ["2026/03/18 11:47:26 agent-auth: INFO: Started (pid: 5861).", "2026/03/18 11:47:26 agent-auth: INFO: Requesting a key from server: 172.16.0.220", "2026/03/18 11:47:26 agent-auth: INFO: No authentication password provided", "2026/03/18 11:47:26 agent-auth: INFO: Using agent name as: vm-benson900", "2026/03/18 11:47:26 agent-auth: INFO: Waiting for server reply", "2026/03/18 11:47:26 agent-auth: ERROR: Agent version must be lower or equal to manager version (from manager)", "2026/03/18 11:47:26 agent-auth: ERROR: Unable to add agent (from manager)"], "stdout": "", "stdout_lines": []}
+
+PLAY RECAP *********************************************************************
+vm-benson900               : ok=43   changed=37   unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
+

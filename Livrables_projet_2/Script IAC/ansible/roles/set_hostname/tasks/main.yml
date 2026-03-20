@@ -1,0 +1,10 @@
+# roles/set_hostname/tasks/main.yml
+- name: Définir le hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Mettre à jour /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ inventory_hostname }}"

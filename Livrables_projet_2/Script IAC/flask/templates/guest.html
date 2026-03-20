@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accès Invité - Laser-Campus</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Accès Invité</h1>
+    <p>Compte temporaire 7 jours - Accès espace commun uniquement</p>
+    
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <form method="POST">
+        <label>Email :</label>
+        <input type="email" name="email" required><br><br>
+        
+        <label>Nom complet :</label>
+        <input type="text" name="nom_complet" required><br><br>
+        
+        <button type="submit">Créer mon accès invité</button>
+    </form>
+    <p><a href="/login">Retour à la connexion</a></p>
+</body>
+</html>

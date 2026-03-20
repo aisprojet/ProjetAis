@@ -1,0 +1,10 @@
+
+PLAY [Configuration VM VDI TechVault] ******************************************
+
+TASK [Gathering Facts] *********************************************************
+[ERROR]: Task failed: Failed to connect to the host via ssh: ssh: Could not resolve hostname : Name or service not known
+fatal: [vm-benson51]: UNREACHABLE! => {"changed": false, "msg": "Task failed: Failed to connect to the host via ssh: ssh: Could not resolve hostname : Name or service not known", "unreachable": true}
+
+PLAY RECAP *********************************************************************
+vm-benson51                : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+

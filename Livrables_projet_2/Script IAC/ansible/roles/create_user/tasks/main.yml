@@ -1,0 +1,35 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/create_user
+
+# Flask a déjà créé le user dans LDAP/Kerberos
+# Ce rôle s'assure que la VM le reconnaît via SSSD
+
+# Note: SSSD n'est pas encore configuré avec LDAPS à ce stade,
+# le handler 'restart sssd' s'exécute après tous les rôles.
+# L'utilisateur sera reconnu après le redémarrage de la VM.
+
+- name: Attendre que SSSD reconnaisse l'utilisateur (avec retries car SSSD peut ne pas être prêt)
+  command: id {{ vm_user }}
+  register: check_user
+  retries: 10
+  delay: 3
+  until: check_user.rc == 0
+  ignore_errors: yes
+
+- name: Créer le répertoire home si absent
+  file:
+    path: "/home/{{ vm_user }}"
+    state: directory
+    owner: "{{ vm_uid }}"
+    group: "{{ vm_gid }}"
+    mode: '0755'
+
+- name: Copier les fichiers de profil bash
+  copy:
+    src: /etc/skel/.bashrc
+    dest: "/home/{{ vm_user }}/.bashrc"
+    remote_src: yes
+    owner: "{{ vm_uid }}"
+    group: "{{ vm_gid }}"
+  ignore_errors: yes

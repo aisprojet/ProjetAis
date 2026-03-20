@@ -1,0 +1,38 @@
+- name: Créer le principal host sur le KDC
+  command: >
+    kadmin
+    -s kerberos.techvault.fr
+    -p flask-admin@TECHVAULT.FR
+    -k -t /srv/ansible/roles/kerberos_keytab/files/flask-admin.keytab
+    -q "addprinc -randkey host/{{ ansible_fqdn }}@TECHVAULT.FR"
+  delegate_to: localhost
+  become: false
+  register: addprinc_result
+  failed_when:
+    - addprinc_result.rc != 0
+    - '"already exists" not in addprinc_result.stderr'
+
+- name: Exporter le keytab depuis le KDC
+  command: >
+    kadmin
+    -s kerberos.techvault.fr
+    -p flask-admin@TECHVAULT.FR
+    -k -t /srv/ansible/roles/kerberos_keytab/files/flask-admin.keytab
+    -q "ktadd -k /tmp/{{ ansible_hostname }}.keytab host/{{ ansible_fqdn }}@TECHVAULT.FR"
+  delegate_to: localhost
+  become: false          # ← idem
+
+- name: Copier le keytab sur la VM
+  copy:
+    src: "/tmp/{{ ansible_hostname }}.keytab"
+    dest: "/etc/krb5.keytab"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Supprimer le keytab temporaire sur localhost
+  file:
+    path: "/tmp/{{ ansible_hostname }}.keytab"
+    state: absent
+  delegate_to: localhost
+  become: false          # ← idem

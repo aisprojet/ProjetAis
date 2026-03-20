@@ -1,0 +1,8 @@
+---
+galaxy_info:
+  author: TechVault
+  description: Install and configure Wazuh agent
+  license: MIT
+  min_ansible_version: 2.9
+
+dependencies: []

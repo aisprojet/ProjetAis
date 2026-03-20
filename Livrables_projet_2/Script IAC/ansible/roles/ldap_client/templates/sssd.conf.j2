@@ -1,0 +1,19 @@
+[sssd]
+services = nss, pam
+domains = techvault.fr
+config_file_version = 2
+
+[domain/techvault.fr]
+id_provider = ldap
+auth_provider = krb5
+ldap_uri = ldaps://ldap.techvault.fr
+ldap_search_base = dc=techvault,dc=fr
+ldap_default_bind_dn = cn=admin,dc=techvault,dc=fr
+ldap_default_authtok = poseidon
+ldap_id_use_start_tls = false
+ldap_tls_cacertdir = /etc/ssl/certs
+cache_credentials = true
+enumerate = true
+
+krb5_realm = TECHVAULT.FR
+krb5_server = kerberos.techvault.fr

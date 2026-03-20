@@ -1,0 +1,62 @@
+# ansible/roles/dns_register/tasks/main.yml
+
+- name: Créer le script d'enregistrement DNS A
+  copy:
+    content: |
+      server 172.16.0.116
+      zone techvault.fr
+      update delete {{ inventory_hostname }}.techvault.fr A
+      update add {{ inventory_hostname }}.techvault.fr 3600 A {{ ansible_host }}
+      send
+    dest: /tmp/dns_a_update.script
+    mode: '0600'
+
+- name: Copier la clé TSIG sur la VM
+  copy:
+    src: cle-tsig.key
+    dest: /etc/dns_update.key
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Redémarrer SSH
+
+- name: Vérifier la copie de la clé TSIG
+  stat:
+    path: /etc/dns_update.key
+  register: key_stat
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Afficher statut de la clé
+  debug:
+    msg: "Clé présente: {{ key_stat.stat.exists }}"
+
+- name: Enregistrer la VM dans le DNS dynamique (enregistrement A)
+  command: nsupdate -k /etc/dns_update.key /tmp/dns_a_update.script
+  register: dns_a_result
+  failed_when: dns_a_result.rc != 0 and "NOTAUTH" not in dns_a_result.stderr
+
+- name: Supprimer le script DNS A temporaire
+  file:
+    path: /tmp/dns_a_update.script
+    state: absent
+
+- name: Créer le script d'enregistrement DNS PTR
+  copy:
+    content: |
+      server 172.16.0.116
+      zone 16.172.in-addr.arpa
+      update delete {{ ansible_host.split('.')[3] }}.{{ ansible_host.split('.')[2] }}.{{ ansible_host.split('.')[1] }}.{{ ansible_host.split('.')[0] }}.in-addr.arpa PTR
+      update add {{ ansible_host.split('.')[3] }}.{{ ansible_host.split('.')[2] }}.{{ ansible_host.split('.')[1] }}.{{ ansible_host.split('.')[0] }}.in-addr.arpa 3600 PTR {{ inventory_hostname }}.techvault.fr.
+      send
+    dest: /tmp/dns_ptr_update.script
+    mode: '0600'
+
+- name: Enregistrer le PTR (résolution inverse)
+  command: nsupdate -k /etc/dns_update.key /tmp/dns_ptr_update.script
+  register: dns_ptr_result
+  failed_when: dns_ptr_result.rc != 0 and "NOTAUTH" not in dns_ptr_result.stderr
+
+- name: Supprimer le script DNS PTR temporaire
+  file:
+    path: /tmp/dns_ptr_update.script
+    state: absent

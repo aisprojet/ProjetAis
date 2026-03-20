@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/kerberos_client
+
+- name: Installer krb5-user et libpam-krb5
+  apt:
+    name:
+      - krb5-user
+      - libpam-krb5
+    state: present
+    update_cache: yes
+
+- name: Déployer krb5.conf
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+    mode: '0644'
+    owner: root
+    group: root
