@@ -32,7 +32,7 @@ mail_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(mes
 mail_logger.addHandler(mail_handler)
 
 app = Flask(__name__)
-app.secret_key = 'poseidon'
+app.secret_key = ''
 
 # ============== CONFIGURATION ==============
 
@@ -40,14 +40,14 @@ app.secret_key = 'poseidon'
 SERVEUR_LDAP     = "ldaps://ldap.techvault.fr"
 BASE_DN_LDAP     = "dc=techvault,dc=fr"
 ADMIN_DN         = "cn=admin,dc=techvault,dc=fr"
-ADMIN_PASSWORD   = "poseidon"
+ADMIN_PASSWORD   = ""
 GROUPE_ETUDIANTS = "cn=etudiants,ou=groups,dc=techvault,dc=fr"
 GROUPE_GUESTS    = "cn=guests,ou=groups,dc=techvault,dc=fr"
 
 # Kerberos
-REALM            = "TECHVAULT.FR"
-KADMIN_PRINCIPAL = "flask-admin@TECHVAULT.FR"
-KADMIN_SERVER    = "kerberos.techvault.fr"
+REALM            = ""
+KADMIN_PRINCIPAL = ""
+KADMIN_SERVER    = ""
 KADMIN_KEYTAB    = "/etc/flask-admin.keytab"
 
 # NFS
@@ -58,8 +58,9 @@ NFS_SSH_KEY = "/var/lib/www-data/.ssh/nfs_admin_key"
 #Tofu
 PM_API   = "https://192.168.1.200:8006/api2/json"
 PM_NODE  = "pve"
-PM_TOKEN_ID   = "Administrateur@pve!NEWTOKEN"
-PM_TOKEN_SECRET = "3cf465e6-3981-4909-bf60-1bbbcb402ed5"
+PM_TOKEN_ID   = ""
+PM_TOKEN_SECRET = "
+"
 TF_DIR = "/srv/tofu"
 
 # Ansible
